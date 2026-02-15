@@ -8,18 +8,33 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
     in {
-      packages.${system}.dwm = pkgs.stdenv.mkDerivation {
+      dwm = pkgs.stdenv.mkDerivation {
         pname = "dwm";
         version = "6.8.1";
-
         src = ./.;
 
-        buildInputs = [ pkgs.xorg.libX11 pkgs.makeWrapper ];
+        nativeBuildInputs = with pkgs; [ pkg-config gcc gnumake ];
+        buildInputs = with pkgs; [
+          libX11
+          libXinerama
+          libXft
+          freetype
+          fontconfig
+        ];
+
+        buildPhase = ''
+          make CC=gcc
+        '';
+
         installPhase = ''
           mkdir -p $out/bin
-          make
           cp dwm $out/bin/
         '';
+
       };
+
+      devShell = pkgs.mkShell { nativeBuildInputs = with pkgs; [ bear ]; };
+
+      defaultPackage.${system} = self.dwm;
     };
 }
