@@ -24,6 +24,7 @@
           ];
 
           buildPhase = ''
+            export ZIG_GLOBAL_CACHE_DIR=$(mktemp -d)
             make CC="zig cc"
           '';
 
